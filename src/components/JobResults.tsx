@@ -7,6 +7,8 @@ import { SaveJobButton } from "./SaveJobButton";
 import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import SavedJob from "@/models/SavedJob";
+import { JobPagination } from "./JobPagination";
+import { ResultsPerPage } from "./ResultsPerPage";
 
 interface JobResultsProps {
   query: string;
@@ -14,18 +16,26 @@ interface JobResultsProps {
   isSponsorship: boolean;
   experienceLevel: string;
   contractType: string;
+  page?: number;
+  limit?: number;
 }
 
-export async function JobResults({ query, location, isSponsorship, experienceLevel, contractType }: JobResultsProps) {
-  // Add a small delay to simulate loading for demo purposes, if desired, or just fetch
-  // await new Promise(resolve => setTimeout(resolve, 1000)); 
+export async function JobResults({ 
+  query, 
+  location, 
+  isSponsorship, 
+  experienceLevel, 
+  contractType,
+  page = 1,
+  limit = 20
+}: JobResultsProps) {
   
   const [jobsResult, authResult] = await Promise.all([
-    searchJobs("gb", query || "developer", location || "", 1, isSponsorship, experienceLevel, contractType),
+    searchJobs("gb", query || "developer", location || "", page, isSponsorship, experienceLevel, contractType, limit),
     auth()
   ]);
 
-  const jobs = jobsResult;
+  const { results: jobs, count: totalJobs } = jobsResult;
   const { userId } = authResult;
 
   let savedJobIds = new Set<string>();
@@ -39,13 +49,24 @@ export async function JobResults({ query, location, isSponsorship, experienceLev
     }
   }
 
+  const totalPages = Math.ceil(totalJobs / limit);
+  const startJobIndex = (page - 1) * limit + 1;
+  const endJobIndex = Math.min(page * limit, totalJobs);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Latest Openings</h2>
-        <Badge variant="outline" className="px-3 py-1">
-          {jobs.length} Jobs Found
-        </Badge>
+      <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+        <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold tracking-tight">Latest Openings</h2>
+            <Badge variant="outline" className="px-3 py-1">
+            {totalJobs > 0 ? (
+                `${startJobIndex}-${endJobIndex} of ${totalJobs} Jobs`
+            ) : (
+                "0 Jobs"
+            )}
+            </Badge>
+        </div>
+        <ResultsPerPage currentLimit={limit} />
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -101,6 +122,10 @@ export async function JobResults({ query, location, isSponsorship, experienceLev
           </div>
         )}
       </div>
+
+       {totalJobs > 0 && (
+        <JobPagination currentPage={page} totalPages={totalPages} />
+       )}
     </div>
   );
 }

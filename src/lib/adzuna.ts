@@ -32,18 +32,19 @@ export async function searchJobs(
   page: number = 1,
   sponsorship: boolean = false,
   level: string = '',
-  contract: string = ''
-): Promise<AdzunaJob[]> {
+  contract: string = '',
+  resultsPerPage: number = 20
+): Promise<{ results: AdzunaJob[]; count: number }> {
   if (!ADZUNA_APP_ID || !ADZUNA_APP_KEY) {
     console.warn('Adzuna API credentials are missing.');
-    return [];
+    return { results: [], count: 0 };
   }
 
   try {
     const url = new URL(`${BASE_URL}/${country}/search/${page}`);
     url.searchParams.append('app_id', ADZUNA_APP_ID);
     url.searchParams.append('app_key', ADZUNA_APP_KEY);
-    url.searchParams.append('results_per_page', '20');
+    url.searchParams.append('results_per_page', resultsPerPage.toString());
     url.searchParams.append('content-type', 'application/json');
     
     // Append sponsorship keywords if filter is active
@@ -73,10 +74,10 @@ export async function searchJobs(
     }
 
     const data: AdzunaResponse = await response.json();
-    return data.results;
+    return { results: data.results, count: data.count };
   } catch (error) {
     console.error('Error fetching jobs from Adzuna:', error);
-    return [];
+    return { results: [], count: 0 };
   }
 }
 

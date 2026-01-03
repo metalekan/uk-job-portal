@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
+import { Heart } from "lucide-react";
 
 export default function Header() {
   return (
@@ -16,9 +19,6 @@ export default function Header() {
             </Link>
             <Link href="/companies" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Companies
-            </Link>
-            <Link href="/favorites" className="transition-colors hover:text-foreground/80 text-foreground/60">
-              Saved Jobs
             </Link>
             <Link href="/salaries" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Salaries
@@ -40,9 +40,6 @@ export default function Header() {
           </SignedOut>
           <SignedIn>
             <div className="flex items-center gap-4">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/post-job">Post a Job</Link>
-              </Button>
               <UserButton 
                 afterSignOutUrl="/"
                 appearance={{
@@ -50,7 +47,15 @@ export default function Header() {
                     avatarBox: "h-9 w-9"
                   }
                 }}
-              />
+              >
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="Saved Jobs"
+                    labelIcon={<Heart className="h-4 w-4" />}
+                    href="/favorites"
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
             </div>
           </SignedIn>
         </div>
