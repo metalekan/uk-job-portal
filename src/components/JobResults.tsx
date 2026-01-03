@@ -55,9 +55,9 @@ export async function JobResults({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-            <h2 className="text-3xl font-bold tracking-tight">Latest Openings</h2>
+            <h2 className="text-lg sm:text-3xl font-bold tracking-tight">Latest Openings</h2>
             <Badge variant="outline" className="px-3 py-1">
             {totalJobs > 0 ? (
                 `${startJobIndex}-${endJobIndex} of ${totalJobs} Jobs`

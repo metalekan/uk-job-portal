@@ -11,7 +11,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-lg xl:text-xl font-bold">Proper Jobs </span>
+            <span className="text-lg sm:text-xl font-bold">UK Jobs </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground/60">

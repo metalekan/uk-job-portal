@@ -93,7 +93,7 @@ export function Hero({ initialQuery = "", initialLocation = "", initialSponsorsh
   };
 
   return (
-    <section className="relative w-full h-[80svh] flex items-center justify-center overflow-hidden">
+    <section className="relative w-full h-[100svh] xl:h-[80svh] flex items-center justify-center overflow-hidden">
       {/* Background Carousel */}
       <div className="absolute inset-0 z-0">
         <Carousel
@@ -104,7 +104,7 @@ export function Hero({ initialQuery = "", initialLocation = "", initialSponsorsh
             align: "start",
           }}
         >
-          <CarouselContent className="h-[80svh]">
+          <CarouselContent className="h-[100svh] xl:h-[80svh]">
             {backgroundImages.map((image, index) => (
               <CarouselItem key={index} className="pl-0 h-full relative">
                 <Image
@@ -135,7 +135,7 @@ export function Hero({ initialQuery = "", initialLocation = "", initialSponsorsh
             unoptimized
           />
         </h1>
-        <p className="text-xl text-white/90 drop-shadow-sm max-w-2xl mx-auto">
+        <p className="text-lg sm:text-xl text-white/90 drop-shadow-sm max-w-2xl mx-auto">
           Discover thousands of job opportunities across the United Kingdom. 
           Connect with top employers and take the next step in your career.
         </p>
