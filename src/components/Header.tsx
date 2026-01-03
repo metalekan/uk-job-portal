@@ -8,7 +8,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold">Proper Jobs </span>
+            <span className="text-lg xl:text-xl font-bold">Proper Jobs </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground/60">
@@ -16,6 +16,9 @@ export default function Header() {
             </Link>
             <Link href="/companies" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Companies
+            </Link>
+            <Link href="/favorites" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Saved Jobs
             </Link>
             <Link href="/salaries" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Salaries

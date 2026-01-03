@@ -2,7 +2,11 @@ import { searchJobs } from "@/lib/adzuna";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, Building2, Clock } from "lucide-react";
+import { MapPin, Building2, Clock } from "lucide-react";
+import { SaveJobButton } from "./SaveJobButton";
+import { auth } from "@clerk/nextjs/server";
+import dbConnect from "@/lib/mongodb";
+import SavedJob from "@/models/SavedJob";
 
 interface JobResultsProps {
   query: string;
@@ -16,7 +20,24 @@ export async function JobResults({ query, location, isSponsorship, experienceLev
   // Add a small delay to simulate loading for demo purposes, if desired, or just fetch
   // await new Promise(resolve => setTimeout(resolve, 1000)); 
   
-  const jobs = await searchJobs("gb", query || "developer", location || "", 1, isSponsorship, experienceLevel, contractType);
+  const [jobsResult, authResult] = await Promise.all([
+    searchJobs("gb", query || "developer", location || "", 1, isSponsorship, experienceLevel, contractType),
+    auth()
+  ]);
+
+  const jobs = jobsResult;
+  const { userId } = authResult;
+
+  let savedJobIds = new Set<string>();
+  if (userId) {
+    try {
+      await dbConnect();
+      const favorites = await SavedJob.find({ userId }).select('jobId');
+      savedJobIds = new Set(favorites.map(f => f.jobId));
+    } catch (err) {
+      console.error("Failed to fetch saved jobs", err);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -30,15 +51,20 @@ export async function JobResults({ query, location, isSponsorship, experienceLev
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {jobs.length > 0 ? (
           jobs.map((job) => (
-            <Card key={job.id} className="flex flex-col group hover:shadow-md transition-shadow">
+            <Card key={job.id} className="flex flex-col group hover:shadow-md transition-shadow relative">
               <CardHeader>
                 <div className="flex justify-between items-start gap-2">
-                  <CardTitle className="text-xl line-clamp-2" title={job.title}>
-                    {job.title}
-                  </CardTitle>
-                  <Badge variant="secondary" className="shrink-0">
-                    {job.contract_type || "Full-time"}
-                  </Badge>
+                  <div className="space-y-1 flex-1">
+                    <CardTitle className="text-xl line-clamp-2 pr-8" title={job.title}>
+                      {job.title}
+                    </CardTitle>
+                    <Badge variant="secondary" className="shrink-0">
+                      {job.contract_type || "Full-time"}
+                    </Badge>
+                  </div>
+                   <div className="absolute top-4 right-4">
+                      <SaveJobButton job={job} initialIsSaved={savedJobIds.has(job.id)} />
+                   </div>
                 </div>
               </CardHeader>
               <CardContent className="flex-1 space-y-4">
